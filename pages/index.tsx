@@ -208,7 +208,7 @@ export default function Home({ notes }: Notes) {
               ))
             ) : (
               <h3 className="text-center font-bold">
-                Let's add your first note! (:
+                Let's add your first note! &#40;:
               </h3>
             )}
           </ul>
