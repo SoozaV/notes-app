@@ -37,10 +37,8 @@ export default function Home() {
       create(data)
         .then(({ message }) => setNoteResponse(message))
         .then(() => {
-          const noteResponseSpan = document.getElementById("note-response");
-          noteResponseSpan?.classList.toggle("hidden");
           setTimeout(() => {
-            noteResponseSpan?.classList.toggle("hidden");
+            setNoteResponse("");
           }, 3000);
         });
     } catch (error) {
@@ -82,9 +80,7 @@ export default function Home() {
               >
                 Add +
               </button>
-              <span id="note-response" className="hidden transition-all duration-1000">
-                {noteResponse}
-              </span>
+              <span id="note-response">{noteResponse}</span>
             </div>
           </form>
         </section>
