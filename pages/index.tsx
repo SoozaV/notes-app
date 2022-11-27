@@ -1,5 +1,8 @@
+import { GetServerSideProps } from "next";
+import { prisma } from "../lib/prisma";
 import { useState } from "react";
 import PageLayout from "../components/PageLayout";
+import { useRouter } from "next/router";
 
 type FormData = {
   id: string;
@@ -7,13 +10,27 @@ type FormData = {
   content: string;
 };
 
-export default function Home() {
+type Notes = {
+  notes: {
+    id: string;
+    title: string;
+    content: string;
+  }[];
+};
+
+export default function Home({ notes }: Notes) {
   const [noteResponse, setNoteResponse] = useState("");
   const [form, setForm] = useState<FormData>({
     id: "",
     title: "",
     content: "",
   });
+
+  const router = useRouter();
+
+  const refreshData = () => {
+    router.replace(router.asPath);
+  };
 
   async function create(data: FormData) {
     try {
@@ -26,6 +43,7 @@ export default function Home() {
       });
 
       setForm({ id: "", title: "", content: "" });
+      refreshData();
       return await res.json();
     } catch (error) {
       console.log("Failure!: ", error);
@@ -39,7 +57,7 @@ export default function Home() {
         .then(() => {
           setTimeout(() => {
             setNoteResponse("");
-          }, 3000);
+          }, 4000);
         });
     } catch (error) {
       console.log("Failure!: ", error);
@@ -84,8 +102,37 @@ export default function Home() {
             </div>
           </form>
         </section>
-        <section></section>
+        <section className="basis-1/2">
+          <ul className="bg-slate-200 rounded p-4">
+            {notes.map((note) => (
+              <li key={note.id} className="p-2 border-b last:border-b-0 hover:bg-gray-100 border-gray-300">
+                <div>
+                  <div>
+                    <h3 className="text-lg capitalize font-bold text-gray-800">{note.title}</h3>
+                    <p>{note.content}</p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     </PageLayout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const notes = await prisma.note.findMany({
+    select: {
+      id: true,
+      title: true,
+      content: true,
+    },
+  });
+
+  return {
+    props: {
+      notes,
+    },
+  };
+};
