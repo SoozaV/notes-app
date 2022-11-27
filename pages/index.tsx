@@ -50,6 +50,57 @@ export default function Home({ notes }: Notes) {
     }
   }
 
+  async function selectNote(note: FormData) {
+    setForm({ id: note.id, title: note.title, content: note.content });
+  }
+
+  async function updateNote(note: FormData) {
+    try {
+      const res = await fetch(`${process.env.API_URL}/api/note/${note.id}`, {
+        body: JSON.stringify(note),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "PUT",
+      });
+      setForm({ id: "", title: "", content: "" });
+      refreshData();
+      return await res
+        .json()
+        .then(({ message }) => setNoteResponse(message))
+        .then(() => {
+          setTimeout(() => {
+            setNoteResponse("");
+          }, 4000);
+        });
+    } catch (error) {
+      console.log("Error while updating!: ", error);
+    }
+  }
+
+  async function deleteNote(id: string) {
+    try {
+      const res = await fetch(`${process.env.API_URL}/api/note/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "DELETE",
+      });
+      refreshData();
+      setForm({ id: "", title: "", content: "" });
+      return await res
+        .json()
+        .then(({ message }) => setNoteResponse(message))
+        .then(() => {
+          setTimeout(() => {
+            setNoteResponse("");
+          }, 4000);
+        });
+    } catch (error) {
+      console.log("Failure!: ", error);
+    }
+  }
+
   const handleSubmit = async (data: FormData) => {
     try {
       create(data)
@@ -92,28 +143,74 @@ export default function Home({ notes }: Notes) {
               onChange={(e) => setForm({ ...form, content: e.target.value })}
             ></textarea>
             <div className="flex justify-between items-center">
-              <button
-                type="submit"
-                className="bg-green-600 hover:bg-green-500 active:bg-green-600 p-1 rounded text-white w-1/3"
-              >
-                Add +
-              </button>
-              <span id="note-response">{noteResponse}</span>
+              {!form.id ? (
+                <button
+                  type="submit"
+                  className="bg-green-600 hover:bg-green-500 active:bg-green-600 p-1 rounded text-white w-1/3"
+                >
+                  Add +
+                </button>
+              ) : (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    updateNote(form);
+                  }}
+                  className="bg-green-600 hover:bg-green-500 active:bg-green-600 p-1 rounded text-white w-1/3"
+                >
+                  Update
+                </button>
+              )}
+
+              {form.id && (
+                <button
+                  onClick={() => {
+                    setForm({ id: "", title: "", content: "" });
+                  }}
+                  className="bg-red-700 hover:bg-red-600 active:bg-red-700 p-1 px-3 text-white rounded"
+                >
+                  Cancel
+                </button>
+              )}
+              {!form.id && <span id="note-response">{noteResponse}</span>}
             </div>
           </form>
         </section>
         <section className="basis-1/2">
           <ul className="bg-slate-200 rounded p-4">
-            {notes.map((note) => (
-              <li key={note.id} className="p-2 border-b last:border-b-0 hover:bg-gray-100 border-gray-300">
-                <div>
-                  <div>
-                    <h3 className="text-lg capitalize font-bold text-gray-800">{note.title}</h3>
-                    <p>{note.content}</p>
+            {notes.length ? (
+              notes.map((note) => (
+                <li
+                  key={note.id}
+                  className="p-2 border-b last:border-b-0 hover:bg-gray-100 border-gray-300"
+                >
+                  <div className="flex justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-lg capitalize font-bold text-gray-800">
+                        {note.title}
+                      </h3>
+                      <p>{note.content}</p>
+                    </div>
+                    <button
+                      onClick={() => selectNote(note)}
+                      className="bg-green-700 hover:bg-green-600 active:bg-green-700 px-3 text-white rounded mr-1 text-xs"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteNote(note.id)}
+                      className="bg-red-700 hover:bg-red-600 active:bg-red-700 px-3 text-white rounded"
+                    >
+                      X
+                    </button>
                   </div>
-                </div>
-              </li>
-            ))}
+                </li>
+              ))
+            ) : (
+              <h3 className="text-center font-bold">
+                Let's add your first note! (:
+              </h3>
+            )}
           </ul>
         </section>
       </div>
