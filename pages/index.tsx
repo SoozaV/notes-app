@@ -17,7 +17,7 @@ export default function Home() {
 
   async function create(data: FormData) {
     try {
-      const res = await fetch("http://localhost:3000/api/create", {
+      const res = await fetch(`${process.env.API_URL}/api/create`, {
         body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
