@@ -117,16 +117,15 @@ export default function Home({ notes }: Notes) {
 
   return (
     <PageLayout>
-      <div className="flex">
-        <section className="basis-1/2">
+      <div className="flex flex-wrap container m-auto max-w-full md:max-w-4xl">
+        <section className="basis-full md:basis-1/2 px-4 md:px-[%10]">
           <h2 className="text-xl font-bold text-gray-800">Add a new note!</h2>
-
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSubmit(form);
             }}
-            className="bg-slate-300 flex flex-col p-5 rounded mt-2 max-w-md shadow-md"
+            className="bg-slate-300 flex flex-col p-5 rounded mt-2 max-w-full shadow-md"
           >
             <input
               type="text"
@@ -176,8 +175,8 @@ export default function Home({ notes }: Notes) {
             </div>
           </form>
         </section>
-        <section className="basis-1/2">
-          <ul className="bg-slate-200 rounded p-4">
+        <section className="basis-full md:basis-1/2 px-4 md:px-[%10]">
+          <ul className="bg-slate-200 rounded p-4 mt-5 md:mt-0">
             {notes.length ? (
               notes.map((note) => (
                 <li

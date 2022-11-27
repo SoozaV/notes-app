@@ -23,7 +23,7 @@ export default function PageLayout({
         <main className="container max-w-6xl flex-grow mx-auto p-7">
           {children}
         </main>
-        <footer className="">
+        <footer className="flex flex-col items-center pb-4">
           Powered by{" "}
           <span className="">
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
