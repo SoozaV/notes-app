@@ -32,6 +32,6 @@ export default async function handler(
     else
       return res
         .status(400)
-        .json({ message: "Unknown error! Please try again." });
+        .json({ message: `Unknown error! Please try again. ${String(error)}` });
   }
 }
